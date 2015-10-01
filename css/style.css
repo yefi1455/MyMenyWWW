@@ -1,0 +1,27 @@
+/* Empty. Add your own CSS if you like */
+.my-cuisine-icon {
+    content: url('C:\MyIonicProjects\recipes\Apple.png');
+    width: 48px;
+}
+
+ .item-content{
+  padding-top:0px !important;
+  padding-bottom:0px !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important 
+}
+    
+ .title1{color:blue;
+        font-size: large !important;
+        font-synthesis : weight;
+        font-weight :bold !important;
+        border:double;
+ }
+ .myheader{color:yellowgreen;
+           background-color : bisque;
+           font-size: large !important;
+           font-weight :bold  !important
+ }
+ .item-avatar{
+     border: hidden
+ }

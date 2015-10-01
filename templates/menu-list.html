@@ -1,0 +1,43 @@
+<!--<div ng-controller="myListCtrl">-->
+    <ion-view hide-nav-bar="true">
+
+        <ion-header-bar class="bar bar-header bar-positive">
+            <button class="button button-clear" ng-click="newItem()">New</button>
+            <h1 class="title">Menu</h1>
+            <button class="button button-clear" ng-click="logout()">Logout</button>
+        </ion-header-bar>
+
+        <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
+            <ion-refresher ng-hide="noData" on-refresh="doRefresh('1')"></ion-refresher>
+            <div class="item-text-wrap">
+                <ion-list>
+                    <ion-item class="avatar" ng-repeat="item1 in listMenu|orderBy: '+user'" href="#/main/list/{{$index}}">
+                        <h2 class="myheader">
+                            {{'Chef: ' + item1.user}}
+                            {{$index}}
+                        </h2>
+                        <h2 class="title1">
+                            {{item1.item.name}}
+                            <!--<ion-option-button class="button-assertive" ng-click="remove(recipe)">-->
+                            <i class="icon ion-chevron-right icon-accessory"></i>
+                            <!--</ion-option-button>-->
+                        </h2>
+
+                        {{item1.item.description}}  <br />
+                        {{item1.item.price|currency}}
+                        <br /> <br />
+
+                    </ion-item>
+                </ion-list>
+            </div>
+
+            <div class="card">
+                <div class="item item-text-wrap" ng-show="noData">
+                    <span>
+                        No Items in Menu. Click  <a href="javascript:" ng-click="newItem()">Here</a> and create one
+                    </span>
+                </div>
+            </div>
+        </ion-content>
+    </ion-view>
+<!--</div>-->

@@ -1,0 +1,58 @@
+<!--<ion-nav-bar></ion-nav-bar>-->
+<ion-view view-title="">
+    <ion-content class="padding">
+        <br />
+        <p>
+            <h2 class="title1">
+                {{item1.name}}   <br />
+                <br />
+                {{item1.price|currency}}
+                <br />
+            </h2>
+            <img ng-src="{{item1.name + '.jpg'}}" style="width: 64px; height: 64px">
+            <!--<a class="item item-avatar" href="#"> <img src="add.png"> </a>-->
+
+            <div class="myheader">
+                {{item1.description}} <br /><br />
+            </div>
+
+            <!--Rating-->
+            <table>
+                <tr>
+                    <td ng-repeat="num in [1, 2, 3, 4, 5]" ng-init="Ind = $index">
+                        <div ng-if="Ind < recipe.rating">
+                            <img ng-src="star.jpg" style="width: 32px; height: 32px">
+                        </div>
+                        <div ng-if="Ind >= recipe.rating">
+                            <img ng-src="starempty.png" style="width: 32px; height: 32px">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            Cuisine:     {{item1.cuisine}} <br />
+            Spice Level: {{item1.spice_level}} <br />
+
+            <div ng-if="item1.vegetarian == true">
+                Vegetarian <br />
+            </div>
+            <div ng-if="recipe.vegetarian == false">
+                Non-vegetarian <br />
+            </div>
+
+            <div ng-if="item1.vegan == true">
+                Vegan <br />
+            </div>
+            <div ng-if="item1.vegan == false">
+                Non-vegan <br />
+            </div>
+
+            <div ng-if="item1.nuts == true">
+                Nuts <br />
+            </div>
+            <div ng-if="item1.nuts == false">
+                No nuts <br />
+            </div>
+        </p>
+    </ion-content>
+</ion-view>
