@@ -1,6 +1,31 @@
 <!--<ion-nav-bar></ion-nav-bar>-->
-<ion-view view-title="">
-    <ion-content class="padding">
+<ion-view view-title="" >
+   <ion-nav-bar >
+       <div class="row">
+           <div class="col">
+              <button class="button button-icon icon  ion-chevron-left" ng-click="goBack()"></button>
+           </div>
+           <div class="col">
+                   <button class="button" ng-click="editItem()">Edit</button>
+           </div>
+           <div class="col">
+                  <button class="button" style="color:red" ng-click="delItem()">Delete</button>
+           </div>
+       </div>
+       <!--<ion-nav-buttons side="left">
+           <button class="button button-icon icon  ion-chevron-left" ng-click="goBack()"></button>
+       </ion-nav-buttons>
+       <ion-nav-buttons center>
+            <button class="button" ng-click="editItem()">Edit</button>
+       </ion-nav-buttons>
+       <ion-nav-buttons side="right">
+            <button class="button" style="color:red" ng-click="delItem()">Delete</button>
+       </ion-nav-buttons>-->
+  </ion-nav-bar>
+<ion-content class="padding">
+        <h2 class="myheader">
+            {{'Chef: ' + item1.user}}
+        </h2>
         <br />
         <p>
             <h2 class="title1">
@@ -9,10 +34,9 @@
                 {{item1.price|currency}}
                 <br />
             </h2>
-            <img ng-src="{{item1.name + '.jpg'}}" style="width: 64px; height: 64px">
-            <!--<a class="item item-avatar" href="#"> <img src="add.png"> </a>-->
+            <img ng-src="{{item1.src}}" style="width: 64px; height: 64px">
 
-            <div class="myheader">
+            <div class="myheader" ng-show="{{item1.description > ' '}}">
                 {{item1.description}} <br /><br />
             </div>
 

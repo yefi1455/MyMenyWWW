@@ -15,61 +15,64 @@ angular.module('Menu', ['ionic', 'Menu.controllers', 'Menu.services'])
                 abstract: true,
                 templateUrl: "templates/auth.html"
             })
-            .state('auth.signin', {
-                url: '/signin',
-                views: {
-                    'auth-signin': {
-                        templateUrl: 'templates/auth-signin.html',
-                        controller: 'SignInCtrl'
-                    }
-                }
-            })
-            .state('auth.signup', {
-                url: '/signup',
-                views: {
-                    'auth-signup': {
-                        templateUrl: 'templates/auth-signup.html',
-                        controller: 'SignUpCtrl'
-                    }
-                }
-            })
 
-           .state('item', {
-                url: "/main",
-                abstract: true,
-                templateUrl: "templates/main.html"
-                //controller: 'myItemDetailCtrl'
-            })
-
-            .state('item.list', {
-                url: '/list',
-                views: {
-                    'menu-list': {
-                        templateUrl: 'templates/menu-list.html',
-                        controller: 'myListCtrl'
-                    }
-                }
-            })
-
-            .state('item.listdet', {
-                url: '/list/:ItemId',
-                views: {
-                    'menu-list': {
-                        templateUrl: 'templates/item-detail.html',
-                        controller: 'myListDetCtrl'
-                    }
-                }
-            })
-
-    .state('cam', {
-        url: '/cam',
+    .state('auth.signin', {
+        url: '/signin',
         views: {
-            'menu-list1': {
-                templateUrl: 'templates/index_1.html', //cam.html
-                controller: 'CamCtrl'
+            'auth-signin': {
+                templateUrl: 'templates/auth-signin.html',
+                controller: 'SignInCtrl'
             }
         }
     })
+
+    .state('auth.signup', {
+        url: '/signup',
+        views: {
+            'auth-signup': {
+                templateUrl: 'templates/auth-signup.html',
+                controller: 'SignUpCtrl'
+            }
+        }
+    })
+
+    .state('item', {
+        url: "/main",
+        abstract: true,
+        templateUrl: "templates/main.html"
+        //controller: 'myItemDetailCtrl'
+    })
+
+    .state('item.list', {
+        url: '/list',
+        views: {
+            'menu-list': {
+                templateUrl: 'templates/menu-list.html',
+                controller: 'myListCtrl'
+            }
+        }
+    })
+
+    .state('item.listdet', {
+        url: '/list/:ItemId',
+        views: {
+            'menu-list': {
+                templateUrl: 'templates/item-detail.html',
+                controller: 'myListDetCtrl'
+            }
+        }
+    })
+
+//YK try all in NewCtrl - commented
+    //.state('cam', {
+    //    url: '/cam',
+    //    views: {
+    //        'menu-list1': {
+    //            templateUrl: 'templates/cam.html', //cam.html
+    //            controller: 'CamCtrl'
+    //        }
+    //    }
+    //})
 
 
     $urlRouterProvider.otherwise('/main/list');

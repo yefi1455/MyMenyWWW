@@ -1,6 +1,5 @@
 <!--<div ng-controller="myListCtrl">-->
     <ion-view hide-nav-bar="true">
-
         <ion-header-bar class="bar bar-header bar-positive">
             <button class="button button-clear" ng-click="newItem()">New</button>
             <h1 class="title">Menu</h1>
@@ -11,12 +10,14 @@
             <ion-refresher ng-hide="noData" on-refresh="doRefresh('1')"></ion-refresher>
             <div class="item-text-wrap">
                 <ion-list>
-                    <ion-item class="avatar" ng-repeat="item1 in listMenu|orderBy: '+user'" href="#/main/list/{{$index}}">
+                    <!--<ion-item class="avatar" ng-repeat="item1 in listMenu|orderBy: '+user'" href="#/main/list/{{$index}}">-->
+                    <ion-item class="avatar" ng-repeat="item1 in listMenu|orderBy: '+user'" href="#/main/list/{{item1.item.myIndex}}">
                         <h2 class="myheader">
                             {{'Chef: ' + item1.user}}
-                            {{$index}}
                         </h2>
                         <h2 class="title1">
+                            <!--<img data-ng-src="data:image/jpg;base64,{{item1.item.image}}" id="myImageInList" />-->
+                            <img data-ng-src="{{item1.item.src}}" id="myImageInList" />
                             {{item1.item.name}}
                             <!--<ion-option-button class="button-assertive" ng-click="remove(recipe)">-->
                             <i class="icon ion-chevron-right icon-accessory"></i>

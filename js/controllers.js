@@ -1,4 +1,5 @@
 angular.module('Menu.controllers', ['Menu.services'])
+//-----------Sign In -------------------------------------------
 .controller('SignInCtrl', function ($rootScope, $scope, API, $window) {
     // if the user is already logged in, take him to his Menu
     //$rootScope.setToken(""); //YK temp
@@ -36,6 +37,7 @@ angular.module('Menu.controllers', ['Menu.services'])
 
 })
 
+//---------Sign Up ----------------------------------------------------------------------
 .controller('SignUpCtrl', function ($rootScope, $scope, API, $window) {
     $scope.user = {
         email: "",
@@ -70,11 +72,11 @@ angular.module('Menu.controllers', ['Menu.services'])
         	{
         		$rootScope.notify("Oops something went wrong, Please try again!");
         	}
-            
         });
     }
 })
 
+//--------- List ----------------------------------------------------------------
 .controller('myListCtrl', function ($rootScope, $scope, API, $timeout, $ionicModal, $window) {
     $scope.userHold = '';
     $rootScope.$on('fetchAll', function () {
@@ -83,6 +85,8 @@ angular.module('Menu.controllers', ['Menu.services'])
             $rootScope.show("Please wait... Processing");
             listMenu = [];
             for (var i = 0; i < data.length; i++) {
+                data[i].item.src = 'data:image/jpg;base64,' + data[i].item.image;
+                data[i].item.myIndex = i;
                 listMenu.push(data[i]);
             };
             if (listMenu.length == 0)
@@ -133,61 +137,80 @@ angular.module('Menu.controllers', ['Menu.services'])
 
 })
 
-.controller('myListDetCtrl', function ($rootScope, $scope, $stateParams) {
+//-------- Detail (one Item) -------------------------------------------------
+.controller('myListDetCtrl', function ($rootScope, $scope, $stateParams, $window) {
     $scope.item1 = listMenu[$stateParams.ItemId].item;// API.get($stateParams.ItemId);
-        //$scope.item1=1
+ 
+    $scope.goBack = function () { $window.location.href = ('#/main/list'); }
 
-  
+    $scope.delItem = function (ig) {
+
+    }
 })
 
-.controller('newCtrl', function ($rootScope, $scope, $ionicModal, API, $window, $state) {
+//--------- New Item --------------------------------------------------------------
+.controller('newCtrl', function ($rootScope, $scope, $ionicModal, API, $window, $state, $location, GetUU) {
 
-    $ionicModal.fromTemplateUrl('templates/index_1.html', function (modal) { //was cam.html
+    $ionicModal.fromTemplateUrl('templates/cam.html', function (modal) { //was cam.html
         $rootScope.camTemplate = modal;
     });
 
     $scope.getimage = function () {
-        //$window.location.href = '#/list/cam';
         $rootScope.camTemplate.show();
-        //$state.go('/cam');
     };
 
-    //$scope.takePicture = function () {
-    //    var i=1
-    //}
+    $scope.data = {item: ""};
 
-    $scope.data = {
-	        item: ""
-	    };
+    $scope.close = function () {$scope.modal.hide();};
 
-        $scope.close = function () {
-            $scope.modal.hide();
+    $scope.getBase64FromImageUrl = function (url) {
+        var img = new Image();
+        var imgObj = document.getElementById('myImage');
+
+        //img.onload = function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = imgObj.width;
+            canvas.height = imgObj.height;
+
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(imgObj, 0, 0);
+
+            var dataURL = canvas.toDataURL("image/jpg");
+
+            img.src = url;
+
+            return(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+        //};
+
+        //img.src = url;
+    }
+
+    $scope.createNew = function () {
+        var imageBase64 = $scope.getBase64FromImageUrl($scope.data.ImageURI)
+        var item = {
+            name:        this.data.name,
+            description: this.data.description,
+            price:       this.data.price,
+            cuisine:     this.data.cuisine,
+            spicelevel:  this.data.spicelevel,
+            vegetarian:  this.data.vegetarian,
+            vegan:       this.data.vegan,
+            nuts:        this.data.nuts,
+            image:        imageBase64
         };
-
-        $scope.createNew = function () {
-            var item = {
-                name:        this.data.name,
-                description: this.data.description,
-                price:       this.data.price,
-                cuisine:     this.data.cuisine,
-                spicelevel:  this.data.spicelevel,
-                vegetarian:  this.data.vegetarian,
-                vegan:       this.data.vegan,
-                nuts:        this.data.nuts
-            };
-        	if (!item) return;
-            $scope.modal.hide();
-            $rootScope.show();
+        if (!item) return;
+        $scope.modal.hide();
+        $rootScope.show();
             
-            $rootScope.show("Please wait... Creating new");
+        $rootScope.show("Please wait... Creating new");
 
-            var form = {
-                item: item,
-                //YK isCompleted: false,
-                user: $rootScope.getToken(),
-                created: Date.now(),
-                updated: Date.now()
-            }
+        var form = {
+            item: item,
+            //YK isCompleted: false,
+            user: $rootScope.getToken(),
+            created: Date.now(),
+            updated: Date.now()
+        }
 
             API.saveItem(form, form.user)
                 .success(function (data, status, headers, config) {
@@ -201,11 +224,13 @@ angular.module('Menu.controllers', ['Menu.services'])
         };
 })
 
-.controller('CamCtrl', ['$scope', '$location', 'GetUU',
-	function ($scope, $location, GetUU) {
 
+//------------ Camera --------------------------------------------------------
+.controller('CamCtrl', ['$rootScope', '$scope', '$location', 'GetUU',
+	function ($rootScope, $scope, $location, GetUU) {
 	    // init variables
-	    $scope.data = {};
+	    $scope.data = { "ImageURI": "Select Image" };
+
 	    $scope.obj;
 	    var pictureSource;   // picture source
 	    var destinationType; // sets the format of returned value
@@ -220,13 +245,13 @@ angular.module('Menu.controllers', ['Menu.services'])
 	        }
 	        //pictureSource=navigator.camera.PictureSourceType.PHOTOLIBRARY;
 	        pictureSource = navigator.camera.PictureSourceType.CAMERA;
-	        destinationType = navigator.camera.DestinationType.FILE_URI;
+	        destinationType = navigator.camera.DestinationType.FILE_URI; //DATA_URL;//YK!
 	    });
 
 	    // get upload URL for FORM
 	    GetUU.query(function (response) {
 	        $scope.data = response;
-	        console.log("got upload url ", $scope.data.uploadurl);
+	        //console.log("got upload url ", $scope.data.uploadurl);
 	    });
 
 	    // take picture
@@ -245,7 +270,9 @@ angular.module('Menu.controllers', ['Menu.services'])
 	        navigator.camera.getPicture(
                 function (imageURI) {
                     //console.log("got camera success ", imageURI);
-                    $scope.mypicture = imageURI;
+                    $scope.mypicture = "data:image/jpeg;base64," + imageURI;
+                    $scope.data.ImageURI = imageURI;
+        
                     //alert(imageURI);
                 },
                 function (err) {
@@ -256,7 +283,35 @@ angular.module('Menu.controllers', ['Menu.services'])
 	    };
 
 	    // do POST on upload url form by http / html form    
+	    function dataURItoBlob(dataURI) {
+	        'use strict'
+	        var byteString,
+                mimestring
+
+	        if (dataURI.split(',')[0].indexOf('base64') !== -1) {
+	            byteString = atob(dataURI.split(',')[1])
+	        } else {
+	            byteString = decodeURI(dataURI.split(',')[1])
+	        }
+
+	        mimestring = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+	        var content = new Array();
+	        for (var i = 0; i < byteString.length; i++) {
+	            content[i] = byteString.charCodeAt(i)
+	        }
+
+	        return new Blob([new Uint8Array(content)], { type: mimestring });
+	    }
+
 	    $scope.update = function (obj) {
+	        $rootScope.camTemplate.hide(); //YK! - temp?'$scope', '$location', 'GetUU',
+	        
+	        document.getElementById('myImage').src = $scope.data.ImageURI;
+	        $rootScope.camTemplate.hide();
+	        var myBlob = dataURItoBlob($scope.data.ImageURI);
+	        return; //YK!
+
 	        $scope.data.uploadurl = GetUU.query();
 
 	        if (!$scope.data.uploadurl) {
@@ -277,7 +332,10 @@ angular.module('Menu.controllers', ['Menu.services'])
 	        //YK params.other = obj.text; // some other POST fields
 	        options.params = params;
 
-	        //console.log("new imp: prepare upload now");
+	        //YK - try to make a blob:
+	        var f1 = new File("My File", $scope.mypicture)
+	        //YK end make a blob
+	        
 	        var ft = new FileTransfer();
 	        ft.upload($scope.mypicture, encodeURI($scope.data.uploadurl), uploadSuccess, uploadError, options, true);
 	        function uploadSuccess(r) {
@@ -290,6 +348,6 @@ angular.module('Menu.controllers', ['Menu.services'])
 	            var i = 1;
 	        }
 	    };
-	}])
+    }])
 
 ;
