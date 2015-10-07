@@ -1,8 +1,15 @@
 angular.module('Menu.controllers', ['Menu.services'])
+
+//YK to share item:
+.factory('ShareData', function () {
+    var shareItem;
+})
+
 //-----------Sign In -------------------------------------------
 .controller('SignInCtrl', function ($rootScope, $scope, API, $window) {
     // if the user is already logged in, take him to his Menu
     //$rootScope.setToken(""); //YK temp
+
     if ($rootScope.isSessionActive()) {
         $window.location.href = ('#/main/list'); 
     }
@@ -16,8 +23,8 @@ angular.module('Menu.controllers', ['Menu.services'])
         var email = this.user.email;
         var password = this.user.password;
         if(!email || !password) {
-        	$rootScope.notify("Please enter valid credentials");
-        	return false;
+            $rootScope.notify("Please enter valid credentials");
+            return false;
         }
         $rootScope.show('Please wait.. Authenticating');
         API.signin({
@@ -50,8 +57,8 @@ angular.module('Menu.controllers', ['Menu.services'])
         var password = this.user.password;
         var uName = this.user.name;
         if(!email || !password || !uName) {
-        	$rootScope.notify("Please enter valid data");
-        	return false;
+            $rootScope.notify("Please enter valid data");
+            return false;
         }
         $rootScope.show('Please wait.. Registering');
         API.signup({
@@ -64,24 +71,49 @@ angular.module('Menu.controllers', ['Menu.services'])
             $window.location.href = ('#/main/list');
         }).error(function (error) {
             $rootScope.hide();
-        	if(error.error && error.error.code == 11000)
-        	{
-        		$rootScope.notify("A user with this email already exists");
-        	}
-        	else
-        	{
-        		$rootScope.notify("Oops something went wrong, Please try again!");
-        	}
+            if(error.error && error.error.code == 11000)
+            {
+                $rootScope.notify("A user with this email already exists");
+            }
+            else
+            {
+                $rootScope.notify("Oops something went wrong, Please try again!");
+            }
         });
     }
 })
 
 //--------- List ----------------------------------------------------------------
 .controller('myListCtrl', function ($rootScope, $scope, API, $timeout, $ionicModal, $window) {
+
+    $rootScope.getBase64FromImageUrl = function (url, document) {
+        var img = new Image();
+        var imgObj = document.getElementById('myImage');
+        var canvas = document.createElement("canvas");
+
+        try {
+            canvas.width = imgObj.width;
+            canvas.height = imgObj.height;
+
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(imgObj, 0, 0);
+
+            var dataURL = canvas.toDataURL("image/jpg");
+
+            img.src = url;
+
+            return (dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+        }
+        catch (e) {
+            return '';
+        }
+    }
+
+
     $scope.userHold = '';
     $rootScope.$on('fetchAll', function () {
         //console.log('fetchAll1');
-            API.getAll($rootScope.getToken()).success(function (data, status, headers, config) {
+        API.getAll($rootScope.getToken()).success(function (data, status, headers, config) {
             $rootScope.show("Please wait... Processing");
             listMenu = [];
             for (var i = 0; i < data.length; i++) {
@@ -119,37 +151,60 @@ angular.module('Menu.controllers', ['Menu.services'])
             $rootScope.notify("Oops something went wrong!! Please try again later");
         });
     })
-;
+    ;
 
     $rootScope.$broadcast('fetchAll');
 
-    $scope.deleteItem = function (id) {
-        $rootScope.show("Please wait... Deleting from List");
-        API.deleteItem(id, $rootScope.getToken())
+})
+
+//-------- Detail (one Item) -------------------------------------------------
+.controller('myListDetCtrl', function ($rootScope, $scope, $stateParams, $window, API, $ionicModal) {
+    $scope.item1 = listMenu[$stateParams.ItemId];// API.get($stateParams.ItemId);
+    
+    shareItem = $scope.item1;
+
+    $scope.goBack = function () { $window.location.href = ('#/main/list'); }
+
+    $scope.dupdItem = function (id) {
+        $rootScope.show("Please wait... Updating");
+        API.updateItem(id, $rootScope.getToken())
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
+                $scope.goBack();
                 $rootScope.doRefresh(1);
             }).error(function (data, status, headers, config) {
                 $rootScope.hide();
                 $rootScope.notify("Oops something went wrong!! Please try again later");
             });
-    };
+    }
 
-})
+    $ionicModal.fromTemplateUrl('templates/updItem.html', function (modal) {
+        $scope.newTemplateUpd = modal;
+    });
+    //}) //YK try to separate
 
-//-------- Detail (one Item) -------------------------------------------------
-.controller('myListDetCtrl', function ($rootScope, $scope, $stateParams, $window) {
-    $scope.item1 = listMenu[$stateParams.ItemId].item;// API.get($stateParams.ItemId);
- 
-    $scope.goBack = function () { $window.location.href = ('#/main/list'); }
+    //.controller('updDetCtrl', function ($rootScope, $scope, $stateParams, $window, API, $ionicModal) {  //YK try to separate
+    $scope.updateItem = function (id) {
+        $scope.newTemplateUpd.show();
+    }
 
-    $scope.delItem = function (ig) {
 
+    $scope.delItem = function (id) {
+        $rootScope.show("Please wait... Deleting from List");
+        API.deleteItem(id, $rootScope.getToken())
+            .success(function (data, status, headers, config) {
+                $rootScope.hide();
+                $scope.goBack();
+                $rootScope.doRefresh(1);
+            }).error(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
     }
 })
 
 //--------- New Item --------------------------------------------------------------
-.controller('newCtrl', function ($rootScope, $scope, $ionicModal, API, $window, $state, $location, GetUU) {
+.controller('newCtrl', function ($rootScope, $scope, $ionicModal, API, $window, $state, $location) {//, GetUU) {
 
     $ionicModal.fromTemplateUrl('templates/cam.html', function (modal) { //was cam.html
         $rootScope.camTemplate = modal;
@@ -163,30 +218,10 @@ angular.module('Menu.controllers', ['Menu.services'])
 
     $scope.close = function () {$scope.modal.hide();};
 
-    $scope.getBase64FromImageUrl = function (url) {
-        var img = new Image();
-        var imgObj = document.getElementById('myImage');
-
-        //img.onload = function () {
-            var canvas = document.createElement("canvas");
-            canvas.width = imgObj.width;
-            canvas.height = imgObj.height;
-
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(imgObj, 0, 0);
-
-            var dataURL = canvas.toDataURL("image/jpg");
-
-            img.src = url;
-
-            return(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-        //};
-
-        //img.src = url;
-    }
+    //---here was base64 -------------
 
     $scope.createNew = function () {
-        var imageBase64 = $scope.getBase64FromImageUrl($scope.data.ImageURI)
+        var imageBase64 = $rootScope.getBase64FromImageUrl($scope.data.ImageURI, document)
         var item = {
             name:        this.data.name,
             description: this.data.description,
@@ -212,22 +247,22 @@ angular.module('Menu.controllers', ['Menu.services'])
             updated: Date.now()
         }
 
-            API.saveItem(form, form.user)
-                .success(function (data, status, headers, config) {
-                    $rootScope.hide();
-                    $rootScope.doRefresh(1);
-                })
-                .error(function (data, status, headers, config) {
-                    $rootScope.hide();
-                    $rootScope.notify("Oops something went wrong!! Please try again later");
-                });
-        };
+        API.saveItem(form, form.user)
+            .success(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.doRefresh(1);
+            })
+            .error(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
+    };
 })
 
 
 //------------ Camera --------------------------------------------------------
-.controller('CamCtrl', ['$rootScope', '$scope', '$location', 'GetUU',
-	function ($rootScope, $scope, $location, GetUU) {
+.controller('CamCtrl', ['$rootScope', '$scope', '$location', //, 'GetUU',
+	function ($rootScope, $scope, $location ) { //, GetUU) {
 	    // init variables
 	    $scope.data = { "ImageURI": "Select Image" };
 
@@ -249,10 +284,10 @@ angular.module('Menu.controllers', ['Menu.services'])
 	    });
 
 	    // get upload URL for FORM
-	    GetUU.query(function (response) {
-	        $scope.data = response;
-	        //console.log("got upload url ", $scope.data.uploadurl);
-	    });
+	    //GetUU.query(function (response) {
+	    //    $scope.data = response;
+	    //    //console.log("got upload url ", $scope.data.uploadurl);
+	    //});
 
 	    // take picture
 	    $scope.takePicture = function () {
@@ -309,10 +344,11 @@ angular.module('Menu.controllers', ['Menu.services'])
 	        
 	        document.getElementById('myImage').src = $scope.data.ImageURI;
 	        $rootScope.camTemplate.hide();
-	        var myBlob = dataURItoBlob($scope.data.ImageURI);
+	        //var myBlob = dataURItoBlob($scope.data.ImageURI);
 	        return; //YK!
 
-	        $scope.data.uploadurl = GetUU.query();
+	        /*
+	        //$scope.data.uploadurl = GetUU.query();
 
 	        if (!$scope.data.uploadurl) {
 	            // error handling no upload url
@@ -347,7 +383,54 @@ angular.module('Menu.controllers', ['Menu.services'])
 	            //console.log("upload error target " + error.target);
 	            var i = 1;
 	        }
+	        */
 	    };
-    }])
+	}]) 
 
+.controller('updCtrl', function ($rootScope, $scope, $stateParams, $window, API, $ionicModal) {  //YK try to separate
+    $scope.data = shareItem.item;
+    $scope._id = shareItem._id;
+
+    $scope.updItem = function () {
+        var k = 1;
+        
+        var imageBase64 = $rootScope.getBase64FromImageUrl($scope.data.ImageURI, document);
+        var item = {
+            name:        this.data.name, 
+            description: this.data.description, 
+            price:       this.data.price,
+            cuisine:     this.data.cuisine,
+            spicelevel:  this.data.spicelevel,
+            vegetarian:  this.data.vegetarian,
+            vegan:       this.data.vegan,
+            nuts:        this.data.nuts,
+            image:       imageBase64
+        };
+        if (!item) return;
+
+        $scope.modal.hide();
+        $rootScope.show();
+            
+        $rootScope.show("Please wait... Updating");
+
+        var form = {
+            item: item,
+            user: $rootScope.getToken(),
+            created: Date.now(),
+            updated: Date.now()
+        }
+
+        API.updateItem($scope._id, form, '')
+            .success(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.doRefresh(1);
+            })
+            .error(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
+        
+    }//updItem
+
+})
 ;

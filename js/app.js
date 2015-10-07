@@ -50,25 +50,36 @@ angular.module('Menu', ['ionic', 'Menu.controllers', 'Menu.services'])
                 templateUrl: 'templates/menu-list.html',
                 controller: 'myListCtrl'
             }
-        }
+        } 
     })
 
     .state('item.listdet', {
         url: '/list/:ItemId',
         views: {
             'menu-list': {
-                templateUrl: 'templates/item-detail.html',
+                templateUrl: 'templates/item-detail.html', 
                 controller: 'myListDetCtrl'
             }
         }
     })
 
-//YK try all in NewCtrl - commented
+
+    .state('upd', {
+        url: '/upd',
+        views: {
+            'menu-list2': {
+                templateUrl: 'templates/updItem.html',
+                controller: 'updCtrl'
+            }
+        }
+    })
+
+//YK no state for NewCtrl - commented
     //.state('cam', {
     //    url: '/cam',
     //    views: {
     //        'menu-list1': {
-    //            templateUrl: 'templates/cam.html', //cam.html
+    //            templateUrl: 'templates/newItem.html', //cam.html
     //            controller: 'CamCtrl'
     //        }
     //    }

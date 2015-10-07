@@ -45,13 +45,9 @@ angular.module('Menu.services', [])
         }
 
         return {
-            signin: function (form) {
-                return $http.post(base + '/api/v1/Menu/auth/login', form);
-            },
-
-            signup: function (form) {
-                return $http.post(base + '/api/v1/Menu/auth/register', form); //RecipesNew
-            },
+            signin: function (form) {return $http.post(base + '/api/v1/Menu/auth/login', form);},
+            
+            signup: function (form) {return $http.post(base + '/api/v1/Menu/auth/register', form);},
 
             getAll: function (email) {
                 return $http.get(base +'/api/v1/Menu/data/list', {
@@ -84,6 +80,7 @@ angular.module('Menu.services', [])
                     }
                 });
             },
+
             putItem: function (id, form, email) {
                 return $http.put(base+'/api/v1/Menu/data/item/' + id, form, {
                     method: 'PUT',
@@ -92,6 +89,7 @@ angular.module('Menu.services', [])
                     }
                 });
             },
+
             deleteItem: function (id, email) {
                 return $http.delete(base+'/api/v1/Menu/data/item/' + id, {
                     method: 'DELETE',
@@ -99,18 +97,27 @@ angular.module('Menu.services', [])
                         token: email
                     }
                 });
-            }
+            },
+
+            updateItem: function (form, id) {
+                return $http.put(base + '/api/v1/Menu/data/item', form, {
+                    method: 'POST', 
+                    params: {
+                        token: id
+                    }
+                });
+            },
         }
     })
 
 // get upload url for file transfer (upload to http post service)
-    //"http://localhost:27018/upl";
-.factory('GetUU', function () {
-    var uploadurl = "http://localhost/upl";  //base + "/upload"; 
-    return {
-        query: function () {
-            return uploadurl;
-        }
-    }
-})
+//    //"http://localhost:27018/upl";
+//.factory('GetUU', function () {
+//    var uploadurl = "http://localhost/upl";  //base + "/upload"; 
+//    return {
+//        query: function () {
+//            return uploadurl;
+//        }
+//    }
+//})
 ; //

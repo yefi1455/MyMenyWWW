@@ -6,10 +6,10 @@
               <button class="button button-icon icon  ion-chevron-left" ng-click="goBack()"></button>
            </div>
            <div class="col">
-                   <button class="button" ng-click="editItem()">Edit</button>
+              <button class="button" ng-click="updateItem(item1._id)">Edit</button>
            </div>
            <div class="col">
-                  <button class="button" style="color:red" ng-click="delItem()">Delete</button>
+                  <button class="button" style="color:red" ng-click="delItem(item1._id)">Delete</button>
            </div>
        </div>
        <!--<ion-nav-buttons side="left">
@@ -22,19 +22,19 @@
             <button class="button" style="color:red" ng-click="delItem()">Delete</button>
        </ion-nav-buttons>-->
   </ion-nav-bar>
-<ion-content class="padding">
+     <ion-content class="padding">
         <h2 class="myheader">
             {{'Chef: ' + item1.user}}
         </h2>
         <br />
         <p>
             <h2 class="title1">
-                {{item1.name}}   <br />
+                {{item1.item.name}}   <br />
                 <br />
-                {{item1.price|currency}}
+                {{item1.item.price|currency}}
                 <br />
             </h2>
-            <img ng-src="{{item1.src}}" style="width: 64px; height: 64px">
+            <img ng-src="{{item1.item.src}}" style="width: 64px; height: 64px">
 
             <div class="myheader" ng-show="{{item1.description > ' '}}">
                 {{item1.description}} <br /><br />
@@ -44,37 +44,37 @@
             <table>
                 <tr>
                     <td ng-repeat="num in [1, 2, 3, 4, 5]" ng-init="Ind = $index">
-                        <div ng-if="Ind < recipe.rating">
+                        <div ng-if="Ind < item1.item.rating">
                             <img ng-src="star.jpg" style="width: 32px; height: 32px">
                         </div>
-                        <div ng-if="Ind >= recipe.rating">
+                        <div ng-if="Ind >= item1.item.rating">
                             <img ng-src="starempty.png" style="width: 32px; height: 32px">
                         </div>
                     </td>
                 </tr>
             </table>
 
-            Cuisine:     {{item1.cuisine}} <br />
-            Spice Level: {{item1.spice_level}} <br />
+            Cuisine:     {{item1.item.cuisine}} <br />
+            Spice Level: {{item1.item.spice_level}} <br />
 
-            <div ng-if="item1.vegetarian == true">
+            <div ng-if="item1.item.vegetarian == true">
                 Vegetarian <br />
             </div>
             <div ng-if="recipe.vegetarian == false">
                 Non-vegetarian <br />
             </div>
 
-            <div ng-if="item1.vegan == true">
+            <div ng-if="item1.item.vegan == true">
                 Vegan <br />
             </div>
-            <div ng-if="item1.vegan == false">
+            <div ng-if="item1.item.vegan == false">
                 Non-vegan <br />
             </div>
 
-            <div ng-if="item1.nuts == true">
+            <div ng-if="item1.item.nuts == true">
                 Nuts <br />
             </div>
-            <div ng-if="item1.nuts == false">
+            <div ng-if="item1.item.nuts == false">
                 No nuts <br />
             </div>
         </p>
