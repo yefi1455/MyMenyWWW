@@ -81,7 +81,7 @@ angular.module('Menu.services', [])
                 });
             },
 
-            putItem: function (id, form, email) {
+            updateItem: function (id, form, email) {
                 return $http.put(base+'/api/v1/Menu/data/item/' + id, form, {
                     method: 'PUT',
                     params: {
@@ -99,16 +99,16 @@ angular.module('Menu.services', [])
                 });
             },
 
-            updateItem: function (form, id) {
-                return $http.put(base + '/api/v1/Menu/data/item', form, {
-                    method: 'POST', 
-                    params: {
-                        token: id
-                    }
-                });
-            },
-        }
-    })
+                //updateItem: function (form, id) {
+                //    return $http.put(base + '/api/v1/Menu/data/item', form, {
+                //        method: 'POST', 
+                //        params: {
+                //            token: id
+                //        }
+                //    });
+                //},
+            }
+        })
 
 // get upload url for file transfer (upload to http post service)
 //    //"http://localhost:27018/upl";
@@ -120,4 +120,4 @@ angular.module('Menu.services', [])
 //        }
 //    }
 //})
-; //
+ //

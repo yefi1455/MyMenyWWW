@@ -86,6 +86,9 @@ angular.module('Menu.controllers', ['Menu.services'])
 //--------- List ----------------------------------------------------------------
 .controller('myListCtrl', function ($rootScope, $scope, API, $timeout, $ionicModal, $window) {
 
+    //$scope.data = { item: "" };
+    shareItem = { item: "" }; //clear for a New Item
+
     $rootScope.getBase64FromImageUrl = function (url, document) {
         var img = new Image();
         var imgObj = document.getElementById('myImage');
@@ -136,6 +139,11 @@ angular.module('Menu.controllers', ['Menu.services'])
             });
 
             $scope.newItem = function () {
+                shareItem._id = -1; //to distinguish new.update
+                //$scope.data = { item: "" };
+                //shareItem = { item: "" };
+                //$scope.$apply()
+
                 $scope.newTemplate.show();
             };
 
@@ -178,7 +186,7 @@ angular.module('Menu.controllers', ['Menu.services'])
             });
     }
 
-    $ionicModal.fromTemplateUrl('templates/updItem.html', function (modal) {
+    $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) { //updItem.html
         $scope.newTemplateUpd = modal;
     });
     //}) //YK try to separate
@@ -214,13 +222,16 @@ angular.module('Menu.controllers', ['Menu.services'])
         $rootScope.camTemplate.show();
     };
 
-    $scope.data = {item: ""};
+    //YK temp(?) - only for new $scope.data = {item: ""};
+    $scope.data = shareItem.item;
+    $scope._id = shareItem._id;
 
-    $scope.close = function () {$scope.modal.hide();};
+    $scope.close = function () { $scope.modal.hide(); $scope.data = { item: "" }; };
 
     //---here was base64 -------------
 
     $scope.createNew = function () {
+
         var imageBase64 = $rootScope.getBase64FromImageUrl($scope.data.ImageURI, document)
         var item = {
             name:        this.data.name,
@@ -234,20 +245,25 @@ angular.module('Menu.controllers', ['Menu.services'])
             image:        imageBase64
         };
         if (!item) return;
+
         $scope.modal.hide();
         $rootScope.show();
             
-        $rootScope.show("Please wait... Creating new");
-
+        if ($scope._id == -1) {
+            $rootScope.show("Please wait... Creating new");
+        } else {
+            $rootScope.show("Please wait... Updating");
+        }
+        
         var form = {
             item: item,
-            //YK isCompleted: false,
             user: $rootScope.getToken(),
             created: Date.now(),
             updated: Date.now()
         }
 
-        API.saveItem(form, form.user)
+        if ($scope._id == -1) {
+            API.saveItem(form, form.user)
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
@@ -256,6 +272,18 @@ angular.module('Menu.controllers', ['Menu.services'])
                 $rootScope.hide();
                 $rootScope.notify("Oops something went wrong!! Please try again later");
             });
+        }
+        else {
+            API.updateItem($scope._id, form, '')
+                .success(function (data, status, headers, config) {
+                    $rootScope.hide();
+                    $rootScope.doRefresh(1);
+                })
+                .error(function (data, status, headers, config) {
+                    $rootScope.hide();
+                    $rootScope.notify("Oops something went wrong!! Please try again later");
+                });
+        }
     };
 })
 
@@ -318,26 +346,26 @@ angular.module('Menu.controllers', ['Menu.services'])
 	    };
 
 	    // do POST on upload url form by http / html form    
-	    function dataURItoBlob(dataURI) {
-	        'use strict'
-	        var byteString,
-                mimestring
+	    //function dataURItoBlob(dataURI) {
+	    //    'use strict'
+	    //    var byteString,
+        //        mimestring
 
-	        if (dataURI.split(',')[0].indexOf('base64') !== -1) {
-	            byteString = atob(dataURI.split(',')[1])
-	        } else {
-	            byteString = decodeURI(dataURI.split(',')[1])
-	        }
+	    //    if (dataURI.split(',')[0].indexOf('base64') !== -1) {
+	    //        byteString = atob(dataURI.split(',')[1])
+	    //    } else {
+	    //        byteString = decodeURI(dataURI.split(',')[1])
+	    //    }
 
-	        mimestring = dataURI.split(',')[0].split(':')[1].split(';')[0]
+	    //    mimestring = dataURI.split(',')[0].split(':')[1].split(';')[0]
 
-	        var content = new Array();
-	        for (var i = 0; i < byteString.length; i++) {
-	            content[i] = byteString.charCodeAt(i)
-	        }
+	    //    var content = new Array();
+	    //    for (var i = 0; i < byteString.length; i++) {
+	    //        content[i] = byteString.charCodeAt(i)
+	    //    }
 
-	        return new Blob([new Uint8Array(content)], { type: mimestring });
-	    }
+	    //    return new Blob([new Uint8Array(content)], { type: mimestring });
+	    //}
 
 	    $scope.update = function (obj) {
 	        $rootScope.camTemplate.hide(); //YK! - temp?'$scope', '$location', 'GetUU',
