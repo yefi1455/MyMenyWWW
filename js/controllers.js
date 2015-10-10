@@ -88,8 +88,12 @@ angular.module('Menu.controllers', ['Menu.services'])
 
     //$scope.data = { item: "" };
     shareItem = { item: "" }; //clear for a New Item
+    shareItem._id = -1;
 
     $rootScope.getBase64FromImageUrl = function (url, document) {
+
+        if (url == '') { return '' } 
+
         var img = new Image();
         var imgObj = document.getElementById('myImage');
         var canvas = document.createElement("canvas");
@@ -120,7 +124,12 @@ angular.module('Menu.controllers', ['Menu.services'])
             $rootScope.show("Please wait... Processing");
             listMenu = [];
             for (var i = 0; i < data.length; i++) {
-                data[i].item.src = 'data:image/jpg;base64,' + data[i].item.image;
+                if (data[i].item.image) {
+                    data[i].item.src = 'data:image/jpg;base64,' + data[i].item.image;
+                }
+                else {
+                    data[i].item.src = '';
+                }
                 data[i].item.myIndex = i;
                 listMenu.push(data[i]);
             };
@@ -133,19 +142,6 @@ angular.module('Menu.controllers', ['Menu.services'])
                 $scope.listMenu = listMenu;
                 $scope.noData = false;
             }
-
-            $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) {
-                $scope.newTemplate = modal;
-            });
-
-            $scope.newItem = function () {
-                shareItem._id = -1; //to distinguish new.update
-                //$scope.data = { item: "" };
-                //shareItem = { item: "" };
-                //$scope.$apply()
-
-                $scope.newTemplate.show();
-            };
 
             $rootScope.logout = function () {
                 $rootScope.setToken("");
@@ -163,40 +159,58 @@ angular.module('Menu.controllers', ['Menu.services'])
 
     $rootScope.$broadcast('fetchAll');
 
+    $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) {
+        $scope.newTemplate = modal;
+    });
+
+    $scope.newItem = function () {
+        shareItem._id = -1; //to distinguish new.update
+
+        //$scope.data = { item: "" };
+        //shareItem = { item: "" };
+        //$scope.$apply()
+
+        $scope.newTemplate.show();
+    };
+
+
 })
 
 //-------- Detail (one Item) -------------------------------------------------
 .controller('myListDetCtrl', function ($rootScope, $scope, $stateParams, $window, API, $ionicModal) {
     $scope.item1 = listMenu[$stateParams.ItemId];// API.get($stateParams.ItemId);
+    //document.getElementById('myImage').src = 'data:image/jpg;base64,' + $scope.item1.ImageURI; //10/09/15 added 'data:image/jpg;base64,' + 
     
     shareItem = $scope.item1;
 
     $scope.goBack = function () { $window.location.href = ('#/main/list'); }
 
-    $scope.dupdItem = function (id) {
-        $rootScope.show("Please wait... Updating");
-        API.updateItem(id, $rootScope.getToken())
-            .success(function (data, status, headers, config) {
-                $rootScope.hide();
-                $scope.goBack();
-                $rootScope.doRefresh(1);
-            }).error(function (data, status, headers, config) {
-                $rootScope.hide();
-                $rootScope.notify("Oops something went wrong!! Please try again later");
-            });
+    //$scope.dupdItem = function (id) {
+    //    $rootScope.show("Please wait... Updating");
+    //    API.updateItem(id, $rootScope.getToken())
+    //        .success(function (data, status, headers, config) {
+    //            $rootScope.hide();
+    //            $scope.goBack();
+    //            //$rootScope.doRefresh(1);
+    //        }).error(function (data, status, headers, config) {
+    //            $rootScope.hide();
+    //            $rootScope.notify("Oops something went wrong!! Please try again later");
+    //        });
+    //}
+
+    $scope.editItem = function (id) {
+
+        $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) { //updItem.html
+            $scope.newTemplateUpd = modal;
+        });
+
+        $scope.$apply();
+
+        $scope.newTemplateUpd.show(); 
+        
+        //works, but without ionic: $window.location.href = '/templates/newItem.html';
     }
-
-    $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) { //updItem.html
-        $scope.newTemplateUpd = modal;
-    });
-    //}) //YK try to separate
-
-    //.controller('updDetCtrl', function ($rootScope, $scope, $stateParams, $window, API, $ionicModal) {  //YK try to separate
-    $scope.updateItem = function (id) {
-        $scope.newTemplateUpd.show();
-    }
-
-
+    
     $scope.delItem = function (id) {
         $rootScope.show("Please wait... Deleting from List");
         API.deleteItem(id, $rootScope.getToken())
@@ -214,36 +228,71 @@ angular.module('Menu.controllers', ['Menu.services'])
 //--------- New Item --------------------------------------------------------------
 .controller('newCtrl', function ($rootScope, $scope, $ionicModal, API, $window, $state, $location) {//, GetUU) {
 
+    //$scope.$on('$ionicView.enter', function () {
+    //    $scope.data = shareItem.item;
+    //    $scope._id = shareItem._id;
+    //});
+
+    //YK temp(?) - only for new $scope.data = {item: ""};
+    $scope.data = shareItem.item;
+    $scope._id = shareItem._id;
+
+
     $ionicModal.fromTemplateUrl('templates/cam.html', function (modal) { //was cam.html
         $rootScope.camTemplate = modal;
     });
 
     $scope.getimage = function () {
         $rootScope.camTemplate.show();
+        //$scope.getPicture();
     };
+    
+    $scope.removeimage = function () {
+        $scope.data.ImageURI = '';
+        document.getElementById('myImage').src = $scope.data.ImageURI; 
+        $scope.$apply();
+        //$scope.data.src = '';
+    }
 
-    //YK temp(?) - only for new $scope.data = {item: ""};
-    $scope.data = shareItem.item;
-    $scope._id = shareItem._id;
+    $scope.close = function () { $scope.modal.hide(); $scope.data = { item: "" }; }; //clear data not to show it for another item. 
+                                                                     
+    $scope.createNew = function () { 
 
-    $scope.close = function () { $scope.modal.hide(); $scope.data = { item: "" }; };
+        //doesn't help $scope.$apply();  
+        var item;
 
-    //---here was base64 -------------
+        var imageBase64 = $rootScope.getBase64FromImageUrl(shareItem.ImageURI, document); //10/09/15 $scope.data.ImageURI, document);
 
-    $scope.createNew = function () {
+        //document.getElementById('myImage').src = 'data:image/jpg;base64,' + imageBase64; //10/09/15 
 
-        var imageBase64 = $rootScope.getBase64FromImageUrl($scope.data.ImageURI, document)
-        var item = {
-            name:        this.data.name,
-            description: this.data.description,
-            price:       this.data.price,
-            cuisine:     this.data.cuisine,
-            spicelevel:  this.data.spicelevel,
-            vegetarian:  this.data.vegetarian,
-            vegan:       this.data.vegan,
-            nuts:        this.data.nuts,
-            image:        imageBase64
-        };
+        if (shareItem._id == -1) {
+            item = {
+                name:        document.getElementById("name").value,
+                description: document.getElementById("description").value,
+                rating:      document.getElementById("rating").value,
+                price:       document.getElementById("price").value,
+                cuisine:     document.getElementById("cuisine").value,
+                spicelevel:  document.getElementById("spicelevel").value,
+                vegetarian:  document.getElementById("vegetarian").value,
+                vegan:       document.getElementById("vegan").value,
+                nuts:        document.getElementById("nuts").value,
+                image: imageBase64
+            };
+        }
+        else {
+            item = {
+                name:        this.data.name,
+                description: this.data.description,
+                rating:      this.data.rating,
+                price:       this.data.price,
+                cuisine:     this.data.cuisine,
+                spicelevel:  this.data.spicelevel,
+                vegetarian:  this.data.vegetarian,
+                vegan:       this.data.vegan,
+                nuts:        this.data.nuts,
+                image:       imageBase64
+            };
+        }
         if (!item) return;
 
         $scope.modal.hide();
@@ -262,11 +311,12 @@ angular.module('Menu.controllers', ['Menu.services'])
             updated: Date.now()
         }
 
-        if ($scope._id == -1) {
+        if (($scope._id == -1)  || ($scope._id ==undefined)) {
             API.saveItem(form, form.user)
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
+                //$scope.data.ImageURI = 
             })
             .error(function (data, status, headers, config) {
                 $rootScope.hide();
@@ -287,13 +337,11 @@ angular.module('Menu.controllers', ['Menu.services'])
     };
 })
 
-
 //------------ Camera --------------------------------------------------------
 .controller('CamCtrl', ['$rootScope', '$scope', '$location', //, 'GetUU',
-	function ($rootScope, $scope, $location ) { //, GetUU) {
+	function ($rootScope, $scope, $location) { //, GetUU) {
 	    // init variables
 	    $scope.data = { "ImageURI": "Select Image" };
-
 	    $scope.obj;
 	    var pictureSource;   // picture source
 	    var destinationType; // sets the format of returned value
@@ -331,11 +379,12 @@ angular.module('Menu.controllers', ['Menu.services'])
 	            return;
 	        }
 	        navigator.camera.getPicture(
-                function (imageURI) {
+                function (imageURI) { 
                     //console.log("got camera success ", imageURI);
-                    $scope.mypicture = "data:image/jpeg;base64," + imageURI;
+                    //10/09/15 $scope.mypicture = "data:image/jpeg;base64," + imageURI;
                     $scope.data.ImageURI = imageURI;
         
+                    $scope.update(); 
                     //alert(imageURI);
                 },
                 function (err) {
@@ -343,35 +392,14 @@ angular.module('Menu.controllers', ['Menu.services'])
                     // error handling camera plugin
                 },
                 options);
-	    };
+	    }; //takePicture
 
-	    // do POST on upload url form by http / html form    
-	    //function dataURItoBlob(dataURI) {
-	    //    'use strict'
-	    //    var byteString,
-        //        mimestring
 
-	    //    if (dataURI.split(',')[0].indexOf('base64') !== -1) {
-	    //        byteString = atob(dataURI.split(',')[1])
-	    //    } else {
-	    //        byteString = decodeURI(dataURI.split(',')[1])
-	    //    }
-
-	    //    mimestring = dataURI.split(',')[0].split(':')[1].split(';')[0]
-
-	    //    var content = new Array();
-	    //    for (var i = 0; i < byteString.length; i++) {
-	    //        content[i] = byteString.charCodeAt(i)
-	    //    }
-
-	    //    return new Blob([new Uint8Array(content)], { type: mimestring });
-	    //}
-
-	    $scope.update = function (obj) {
+	    $scope.update = function () {
 	        $rootScope.camTemplate.hide(); //YK! - temp?'$scope', '$location', 'GetUU',
-	        
 	        document.getElementById('myImage').src = $scope.data.ImageURI;
-	        $rootScope.camTemplate.hide();
+	        shareItem.ImageURI = $scope.data.ImageURI;
+
 	        //var myBlob = dataURItoBlob($scope.data.ImageURI);
 	        return; //YK!
 
@@ -413,8 +441,10 @@ angular.module('Menu.controllers', ['Menu.services'])
 	        }
 	        */
 	    };
-	}]) 
-
+}
+]
+) 
+/*
 .controller('updCtrl', function ($rootScope, $scope, $stateParams, $window, API, $ionicModal) {  //YK try to separate
     $scope.data = shareItem.item;
     $scope._id = shareItem._id;
@@ -461,4 +491,5 @@ angular.module('Menu.controllers', ['Menu.services'])
     }//updItem
 
 })
+*/
 ;

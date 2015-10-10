@@ -6,7 +6,7 @@
               <button class="button button-icon icon  ion-chevron-left" ng-click="goBack()"></button>
            </div>
            <div class="col">
-              <button class="button" ng-click="updateItem(item1._id)">Edit</button>
+              <button class="button" ng-click="editItem(item1._id)">Edit</button>
            </div>
            <div class="col">
                   <button class="button" style="color:red" ng-click="delItem(item1._id)">Delete</button>
@@ -34,7 +34,7 @@
                 {{item1.item.price|currency}}
                 <br />
             </h2>
-            <img ng-src="{{item1.item.src}}" style="width: 64px; height: 64px">
+            <img data-ng-src="{{item1.item.src}}" id="myImage" style="width: 130px; height: 130px">
 
             <div class="myheader" ng-show="{{item1.item.description > ' '}}">
                 {{item1.item.description}} <br /><br />

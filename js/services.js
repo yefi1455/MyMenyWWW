@@ -23,6 +23,7 @@ angular.module('Menu.services', [])
             }, 1999);
         };
 
+ //YK - do not need such refresh - commented (?):
         $rootScope.doRefresh = function (tab) {
             if(tab == 1)
                 $rootScope.$broadcast('fetchAll');

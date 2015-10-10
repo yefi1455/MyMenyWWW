@@ -64,23 +64,23 @@ angular.module('Menu', ['ionic', 'Menu.controllers', 'Menu.services'])
     })
 
 
-    .state('upd', {
-        url: '/upd',
-        views: {
-            'menu-list2': {
-                templateUrl: 'templates/updItem.html',
-                controller: 'updCtrl'
-            }
-        }
-    })
+    //.state('upd', {
+    //    url: '/upd',
+    //    views: {
+    //        'menu-list2': {
+    //            templateUrl: 'templates/updItem.html',
+    //            controller: 'updCtrl'
+    //        }
+    //    }
+    //})
 
 //YK no state for NewCtrl - commented
-    //.state('cam', {
-    //    url: '/cam',
+    //.state('newupd', {
+    //    url: '/newupd',
     //    views: {
     //        'menu-list1': {
     //            templateUrl: 'templates/newItem.html', //cam.html
-    //            controller: 'CamCtrl'
+    //            controller: 'NewCtrl'
     //        }
     //    }
     //})

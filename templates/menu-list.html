@@ -1,4 +1,3 @@
-<!--<div ng-controller="myListCtrl">-->
     <ion-view hide-nav-bar="true">
         <ion-header-bar class="bar bar-header bar-positive">
             <button class="button button-clear" ng-click="newItem()">New</button>
@@ -8,27 +7,27 @@
 
         <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
             <ion-refresher ng-hide="noData" on-refresh="doRefresh('1')"></ion-refresher>
-            <div class="item-text-wrap">
+            <div class="item-text-wrap"> 
                 <ion-list>
                     <!--<ion-item class="avatar" ng-repeat="item1 in listMenu|orderBy: '+user'" href="#/main/list/{{$index}}">-->
-                    <ion-item class="avatar" ng-repeat="item1 in listMenu|orderBy: '+user'" href="#/main/list/{{item1.item.myIndex}}">
+                    <ion-item class="avatar" ng-repeat="item1 in listMenu|orderBy: ['+user','+item.name']" href="#/main/list/{{item1.item.myIndex}}">
                         <h2 class="myheader">
                             {{'Chef: ' + item1.user}}
                         </h2>
                         <h2 class="title1">
                             <!--<img data-ng-src="data:image/jpg;base64,{{item1.item.image}}" id="myImageInList" />-->
-                            <img data-ng-src="{{item1.item.src}}" id="myImageInList" />
+                            <img data-ng-src="{{item1.item.src}}" id="myImageInList" style="width: 130px; height: 130px" ng-show="{{item1.item.src > ' '}}" />
                             {{item1.item.name}}
                             <!--<ion-option-button class="button-assertive" ng-click="remove(recipe)">-->
                             <i class="icon ion-chevron-right icon-accessory"></i>
                             <!--</ion-option-button>-->
                         </h2>
 
-                        {{item1.item.description}}  <br />
-                        {{item1.item.price|currency}}
-                        <br /> <br />
+                            {{item1.item.description}}  <br />
+                            {{item1.item.price|currency}}
+                            <br /> <br />
 
-                    </ion-item>
+</ion-item>
                 </ion-list>
             </div>
 
@@ -41,4 +40,4 @@
             </div>
         </ion-content>
     </ion-view>
-<!--</div>-->
+    <!--</div>-->

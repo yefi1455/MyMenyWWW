@@ -1,42 +1,45 @@
-<div class="modal slide-in-up" ng-controller="newCtrl">
-   <header class="bar bar-header bar-secondary">
-      <button class="button button-clear button-primary" ng-click="close()">Cancel</button>
-      <h1 class="title">Create/Update Item</h1>
-      <button class="button button-positive" ng-click="createNew()">Done</button>
-   </header>
-   <ion-content class="padding has-header">
-       <span class="input-label">Name:</span>
-       <input type="text" placeholder="Name" ng-model="data.name">
+    <div class="modal slide-in-up" ng-controller="newCtrl" ng-app="Menu">
+        <header class="bar bar-header bar-secondary">
+            <button class="button button-clear button-primary" ng-click="close()">Cancel</button>
+            <h1 class="title">Create/Update Item</h1>
+            <button class="button button-positive" ng-click="createNew()">Done</button>
+        </header>
+        <ion-content class="padding has-header">
+            <span class="input-label">Name:</span>
+            <input type="text" placeholder="Name" ng-model="data.name" id="name">
 
-<br />
-     <button class="button button-clear" ng-click="getimage()">Get Image</button>
-     <img ng-src="data.ImageURI" id="myImage" />
-<br/>
+            <br />
+            <button class="button button-clear" ng-click="getimage()">Get Image</button>
+            <button class="button button-clear" ng-click="removeimage()">Remove Image</button>
+            <br />
+            <img data-ng-src="{{data.src}}" id="myImage"  style="width: 130px; height: 130px" />
+            <br />
 
-       <span class="input-label">Description:</span>
-       <input type="text" placeholder="Description" ng-model="data.description">
-       <span class="input-label">Price $:</span>
-           <input type="text" placeholder="Price" ng-model="data.price">
-       <span class="input-label">Cuisine:</span>
-       <input class="list" type="text" placeholder="Cuisine" ng-model="data.cuisine">
-           <div class="list">
-               <label class="item item-input item-select">
-                   <div class="input-label">
-                   Spice Level (4 - the highest):
-                   </div>
-                   <select ng-model="data.spicelevel">
-                       <option selected>1</option>
-                       <option>2</option>
-                       <option>3</option>
-                       <option>4</option>
-                   </select>
-               </label>
-           </div>
-       <span class="input-label">Vegetarian:</span>
-       <input class="list" type="checkbox" placeholder="" ng-model="data.vegetarian" />
-       <span class="input-label">Vegan:</span>
-       <input class="list" type="checkbox" placeholder="" ng-model="data.vegan" />
-       <span class="input-label">Nuts:</span>
-       <input class="list" type="checkbox" placeholder="" ng-model="data.nuts" />
-</ion-content>
-</div>
+            <span class="input-label">Description:</span>
+            <input type="text" placeholder="Description" ng-model="data.description" id="description">
+            <input class="list" type="text" placeholder="Rating" ng-model="data.rating" id="raiting">
+            <span class="input-label">Price $:</span>
+            <input type="text" placeholder="Price" ng-model="data.price" id="price">
+            <span class="input-label">Cuisine:</span>
+            <input class="list" type="text" placeholder="Cuisine" ng-model="data.cuisine" id="cuisine">
+            <div class="list">
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        Spice Level (4 - the highest):
+                    </div>
+                    <select ng-model="data.spicelevel" id="spicelevel">
+                        <option selected>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                </label>
+            </div>
+            <span class="input-label">Vegetarian:</span>
+            <input class="list" type="checkbox" placeholder="" ng-model="data.vegetarian" id="vegetarian"/>
+            <span class="input-label">Vegan:</span>
+            <input class="list" type="checkbox" placeholder="" ng-model="data.vegan" id="vegan"/>
+            <span class="input-label">Nuts:</span>
+            <input class="list" type="checkbox" placeholder="" ng-model="data.nuts" id="nuts"/>
+        </ion-content>
+    </div>
